@@ -10,15 +10,16 @@ NetWorkManager::NetWorkManager(QString download_dir_path, QObject *parent) :
     download_dir(download_dir_path)
 {
     manager = new QNetworkAccessManager(this);
-    QDir().mkpath(download_dir);
+    QDir().mkpath(download_dir);//保证路径存在
 }
 
 void NetWorkManager::SetDownloadDir(QString path)
 {
     download_dir = path;
+    QDir().mkpath(download_dir);
 }
 
-void NetWorkManager::DownloadFile(QUrl _url, bool is_all_override)
+void NetWorkManager::DownloadFile(QUrl _url, bool is_all_overwrite)
 {
     url = _url;
 
@@ -33,7 +34,7 @@ void NetWorkManager::DownloadFile(QUrl _url, bool is_all_override)
     file = new QFile(download_dir + fileName);
     if (file->exists())
     {
-        if(!is_all_override)
+        if(!is_all_overwrite)
         {
             if (QMessageBox::question(NULL, tr("HTTP"),
                                       tr("There already exists a file called %1 in "
@@ -41,12 +42,12 @@ void NetWorkManager::DownloadFile(QUrl _url, bool is_all_override)
                                       QMessageBox::Yes|QMessageBox::No, QMessageBox::No)
                     == QMessageBox::No)
             {
-                qDebug() << "file no override";
+                qDebug() << "file no Overwrite";
                 emit FinishDownload(false,QString());
                 return;
             }
         }
-        qDebug() << "file override";
+        qDebug() << "file Overwrite";
         file->remove();
     }
     if (!file->open(QIODevice::WriteOnly))
@@ -54,7 +55,7 @@ void NetWorkManager::DownloadFile(QUrl _url, bool is_all_override)
         QMessageBox::information(NULL, tr("HTTP"),
                                  tr("Unable to save the file %1: %2.")
                                  .arg(fileName).arg(file->errorString()));
-        qDebug() << "file open fail";
+        qDebug() << "file open fail:" << file->errorString();
         delete file;
         file = 0;
         emit FinishDownload(false,QString());
@@ -113,11 +114,13 @@ void NetWorkManager::HttpFinish()
         }
         else
         {
+            //解决链接重定向
             QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
             if (!redirectionTarget.isNull())
             {
                 QUrl newUrl = url.resolved(redirectionTarget.toUrl());
-                if (QMessageBox::question(NULL, tr("HTTP"),
+                //默认进行链接重定向
+                if (true || QMessageBox::question(NULL, tr("HTTP"),
                                           tr("Redirect to %1 ?").arg(newUrl.toString()),
                                           QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
                 {
@@ -127,6 +130,7 @@ void NetWorkManager::HttpFinish()
                     reply = 0;
                     file->open(QIODevice::WriteOnly);
                     file->resize(0);
+                    //链接重定向，重新请求数据
                     StartRequest();
                     return;
                 }
@@ -142,6 +146,7 @@ void NetWorkManager::HttpFinish()
             }
             else
             {
+                //判断文件的后缀名是否正常，根据HTTP报头的ContentType确定文件后缀名
                 QMimeType type = QMimeDatabase().mimeTypeForName(reply->header(QNetworkRequest::ContentTypeHeader).toString());
                 QFileInfo file_info(file->fileName());
                 QString suffix = file_info.suffix();
@@ -151,6 +156,7 @@ void NetWorkManager::HttpFinish()
                 }
                 else
                 {
+                    //部分链接可能在识别链接的时候识别错文件名，如部分链接重新跳转
                     if(!type.suffixes().contains(suffix))
                     {
                         qDebug() << "file need rename";
@@ -172,7 +178,7 @@ void NetWorkManager::HttpFinish()
 
 void NetWorkManager::HttpReadyRead()
 {
-//    qDebug() << "HttpReadyRead";
+    qDebug() << "HttpReadyRead";
     if (file)
         file->write(reply->readAll());
 }

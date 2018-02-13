@@ -47,7 +47,7 @@ void OpenLogOutput()
     QFile file(LOG_PATH);
     QTextStream text_stream(&file);
     file.open(QIODevice::WriteOnly | QIODevice::Append);
-    text_stream << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") << "APPLICATION OPEN\r\n";
+    text_stream << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss ") << "APPLICATION OPEN\r\n";
     file.close();
     qInstallMessageHandler(MessageOutput);
 }

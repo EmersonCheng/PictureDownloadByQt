@@ -32,8 +32,8 @@ private:
     void AbortDownload();
 
     Ui::Widget *ui;
-    NetWorkManager *network_manager;
     QSettings *setting;
+    NetWorkManager *network_manager;
     QString download_dir;
     QList<URLFrame*> url_frame_list;
     int current_download_file;

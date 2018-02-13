@@ -1,12 +1,11 @@
 #include "widget.h"
 #include "ui_widget.h"
 
-#include <QFileDialog>
-#include <QFormLayout>
 #include <QApplication>
-#include <QDebug>
+#include <QFormLayout>
+#include <QFileDialog>
 #include <QMessageBox>
-#include <QProcess>
+#include <QDebug>
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -76,7 +75,7 @@ void Widget::closeEvent(QCloseEvent *)
 
 void Widget::ReadSetting()
 {
-    download_dir = setting->value("download_dir",QDir::home().path() + "/Desktop").toString();
+    download_dir = setting->value("download_dir",QDir::home().path() + "/Desktop/").toString();
     ui->down_path_lineedit->setText(QDir::toNativeSeparators(download_dir));
 
     int size = setting->beginReadArray("url");

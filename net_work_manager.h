@@ -12,7 +12,7 @@ class NetWorkManager : public QObject
 public:
     explicit NetWorkManager(QString download_dir_path , QObject *parent = 0);
     void SetDownloadDir(QString path);
-    void DownloadFile(QUrl _url, bool is_all_override);
+    void DownloadFile(QUrl _url, bool is_all_overwrite);
     void AbortDownload();
 
 signals:
