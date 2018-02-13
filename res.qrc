@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/pixmap">
+        <file>success.png</file>
+        <file>fail.png</file>
+    </qresource>
+</RCC>
