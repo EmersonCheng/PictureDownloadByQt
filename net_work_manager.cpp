@@ -10,14 +10,7 @@ NetWorkManager::NetWorkManager(QString download_dir_path, QObject *parent) :
     download_dir(download_dir_path)
 {
     manager = new QNetworkAccessManager(this);
-    if(download_dir.contains(QDir::tempPath()))
-    {
-        qDebug() << "use %TEMP%";
-        QDir tmp(download_dir);
-        if(tmp.exists())
-            tmp.removeRecursively();
-        tmp.mkpath(download_dir);
-    }
+    QDir().mkpath(download_dir);
 }
 
 void NetWorkManager::SetDownloadDir(QString path)

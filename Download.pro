@@ -26,25 +26,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         widget.cpp \
-    urlframe.cpp \
-    net_work_manager.cpp
+        urlframe.cpp \
+        net_work_manager.cpp
 
 HEADERS += \
         widget.h \
-    urlframe.h \
-    net_work_manager.h
+        urlframe.h \
+        net_work_manager.h
 
 FORMS += \
         widget.ui \
-    urlframe.ui
+        urlframe.ui
 
 RESOURCES += \
-    res.qrc
+        res.qrc
 
 LIBS += -L$$PWD -llibeay32 \
-    -L$$PWD -lssleay32
+        -L$$PWD -lssleay32
 
 DISTFILES += \
-    libeay32.dll \
-    ssleay32.dll
-
+        libeay32.dll \
+        ssleay32.dll

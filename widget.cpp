@@ -35,7 +35,11 @@ Widget::~Widget()
 void Widget::FinishDownload(bool is_success, QString file_path)
 {
     if(is_success)
+    {
         url_frame_list.at(current_download_file)->SetStatus(URLFrame::SUCCESS);
+        QFile::copy(file_path,download_dir + QFileInfo(file_path).fileName());
+        QFile::remove(file_path);
+    }
     else
         url_frame_list.at(current_download_file)->SetStatus(URLFrame::FAIL);
     current_download_file++;
@@ -45,13 +49,6 @@ void Widget::FinishDownload(bool is_success, QString file_path)
     {
         ui->down_btn->setEnabled(true);
         ui->cancle_btn->setEnabled(false);
-
-        QFileInfoList list = QDir(QDir::tempPath()+"/pic_download/").entryInfoList(QDir::Files);
-        for(int i = 0; i < list.size(); i++)
-        {
-            QFile::copy(list.at(i).filePath(),download_dir + list.at(i).fileName());
-            QFile::remove(list.at(i).filePath());
-        }
 
         QMessageBox::information(this,tr("下载完成"),tr("全部下载完成"));
     }
@@ -79,8 +76,8 @@ void Widget::closeEvent(QCloseEvent *)
 
 void Widget::ReadSetting()
 {
-    download_dir = setting->value("download_dir",QDir::home().path() + "/Desktop/").toString();
-    ui->down_path_lineedit->setText(download_dir);
+    download_dir = setting->value("download_dir",QDir::home().path() + "/Desktop").toString();
+    ui->down_path_lineedit->setText(QDir::toNativeSeparators(download_dir));
 
     int size = setting->beginReadArray("url");
     for(int i = 0; i < size; i++)
@@ -96,10 +93,9 @@ void Widget::ReadSetting()
 
 void Widget::SelectDownloadPath()
 {
-    QString tmp = QFileDialog::getExistingDirectory(this,tr("选择下载路径"),download_dir);
+    QString tmp = QFileDialog::getExistingDirectory(this,tr("选择下载路径"),ui->down_path_lineedit->text());
     if(!tmp.isEmpty())
-        download_dir = tmp;
-    ui->down_path_lineedit->setText(download_dir);
+        ui->down_path_lineedit->setText(QDir::toNativeSeparators(tmp));
 }
 
 void Widget::AddUrlFrame()
@@ -124,6 +120,19 @@ void Widget::AddUrlFrame()
 
 void Widget::Download()
 {
+    QString path = ui->down_path_lineedit->text();
+    if(path.isEmpty())
+    {
+        QMessageBox::warning(this,tr("警告"),tr("下载路径为空"),QMessageBox::Ok);
+        return;
+    }
+    if(!QDir(path).exists())
+    {
+        QMessageBox::warning(this,tr("警告"),tr("下载路径不存在"),QMessageBox::Ok);
+        return;
+    }
+    download_dir = QDir(path).path() + "/";
+
     ui->down_btn->setEnabled(false);
     ui->cancle_btn->setEnabled(true);
     current_download_file = 0;
