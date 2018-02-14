@@ -36,6 +36,10 @@ void Widget::FinishDownload(bool is_success, QString file_path)
     if(is_success)
     {
         url_frame_list.at(current_download_file)->SetStatus(URLFrame::SUCCESS);
+        if( QFileInfo::exists(download_dir + QFileInfo(file_path).fileName()) )
+        {
+            QFile::remove(download_dir + QFileInfo(file_path).fileName());
+        }
         QFile::copy(file_path,download_dir + QFileInfo(file_path).fileName());
         QFile::remove(file_path);
     }
