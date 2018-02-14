@@ -24,6 +24,9 @@ public slots:
 protected:
     void closeEvent(QCloseEvent *);
 
+private slots:
+    void on_help_btn_clicked();
+
 private:
     void ReadSetting();
     void SelectDownloadPath();

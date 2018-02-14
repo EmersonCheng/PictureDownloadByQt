@@ -55,6 +55,7 @@ void OpenLogOutput()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setFont(QFont("微软雅黑",14));
     OpenLogOutput();
 
     Widget w;

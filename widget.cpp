@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include "help_dialog.h"
 
 #include <QApplication>
 #include <QFormLayout>
@@ -151,4 +152,10 @@ void Widget::AbortDownload()
     {
         url_frame_list.at(current_download_file)->SetStatus(URLFrame::FAIL);
     }
+}
+
+void Widget::on_help_btn_clicked()
+{
+    static HelpDialog *help_dialog = new HelpDialog(this);
+    help_dialog->show();
 }
